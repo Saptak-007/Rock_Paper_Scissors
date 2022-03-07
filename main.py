@@ -7,7 +7,8 @@ pygame.init()
 
 
 # Setting up the screen
-SCREEN = pygame.display.set_mode((SCREEN_HEIGHT, SCREEN_WIDTH))
+# SCREEN = pygame.display.set_mode((SCREEN_HEIGHT, SCREEN_WIDTH))
+SCREEN = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Rock Paper Scissors")
 pygame.display.set_icon(icon.convert_alpha())
 
@@ -121,17 +122,17 @@ class Game:
         if self.winner == "draw":
             self.text = font.render('Its a draw!!', True, (149, 150, 72))
             self.text_rect = self.text.get_rect(
-                center=(SCREEN_HEIGHT//2, SCREEN_WIDTH//2))
+                center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
 
         elif self.winner == "player":
             self.text = font.render('YOU WIN!!', True, (11, 158, 18))
             self.text_rect = self.text.get_rect(
-                center=(SCREEN_HEIGHT//2, SCREEN_WIDTH//2))
+                center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
 
         elif self.winner == "computer":
             self.text = font.render('YOU LOSE!!', True, (189, 0, 0))
             self.text_rect = self.text.get_rect(
-                center=(SCREEN_HEIGHT//2, SCREEN_WIDTH//2))
+                center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
 
     def run(self):
         self.player_choice, self.player_choice_str = self.get_player_choice()
@@ -142,7 +143,7 @@ class Game:
         choice_text_player = font_for_choice.render(f"Player's choice: {self.player_choice_str.capitalize()}", True, (136, 22, 184))
         choice_text_player_rect = choice_text_player.get_rect(topleft=(0, 0))
         choice_text_computer = font_for_choice.render(f"Computer's choice: {self.computer_choice_str.capitalize()}", True, (225, 225, 0))
-        choice_text_computer_rect = choice_text_player.get_rect(topleft=(SCREEN_WIDTH, 0))
+        choice_text_computer_rect = choice_text_player.get_rect(topleft=(720, 0))
 
         while True:
             for event in pygame.event.get():
@@ -161,8 +162,8 @@ class Game:
             SCREEN.blit(self.text, self.text_rect)
             SCREEN.blit(choice_text_player, choice_text_player_rect)
             SCREEN.blit(choice_text_computer, choice_text_computer_rect)
-            SCREEN.blit(font.render("Press 'q' to quit!!", True, (214, 182, 219)), (SCREEN_WIDTH//2+75, SCREEN_HEIGHT-758))
-            SCREEN.blit(font.render("Press SPACE to play again!!", True, (156, 126, 155)), (SCREEN_WIDTH//2-50, SCREEN_HEIGHT-650))
+            SCREEN.blit(font.render("Press 'q' to quit!!", True, (214, 182, 219)), (SCREEN_HEIGHT//2+75, SCREEN_WIDTH-758))
+            SCREEN.blit(font.render("Press SPACE to play again!!", True, (156, 126, 155)), (SCREEN_HEIGHT//2-50, SCREEN_WIDTH-650))
 
             pygame.display.update()
 

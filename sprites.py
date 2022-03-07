@@ -5,7 +5,7 @@ pygame.init()
 # Load sprites
 
 # Load background
-bg = pygame.transform.scale(pygame.image.load("assets/sprites/background.jpeg"), (SCREEN_HEIGHT, SCREEN_WIDTH))
+bg = pygame.transform.scale(pygame.image.load("assets/sprites/background.jpeg"), (SCREEN_WIDTH, SCREEN_HEIGHT))
 bg_rect = bg.get_rect(topleft=(0, 0))
 
 # Load sprites of rock, paper, and scissors
