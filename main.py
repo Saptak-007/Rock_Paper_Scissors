@@ -14,13 +14,13 @@ pygame.display.set_icon(icon.convert_alpha())
 
 # Converting all the sprites
 rock = rock.convert_alpha()
-rock_rect = rock.get_rect(topleft=(250, 500))
+rock_rect = rock.get_rect(topleft=(SCREEN_WIDTH*(1/5), SCREEN_HEIGHT*0.7))
 
 paper = paper.convert_alpha()
-paper_rect = paper.get_rect(topleft=(550, 500))
+paper_rect = paper.get_rect(topleft=(SCREEN_WIDTH*(1/2.3), SCREEN_HEIGHT*0.7))
 
 scissors = scissors.convert_alpha()
-scissors_rect = scissors.get_rect(topleft=(850, 500))
+scissors_rect = scissors.get_rect(topleft=(SCREEN_WIDTH*(1/1.5), SCREEN_HEIGHT*0.7))
 
 
 class Game:
@@ -36,10 +36,10 @@ class Game:
             2: "computer"
         }
 
-        self.result = ""
+        self.result = None
         self.player_choice = None
         self.computer_choice = None
-        self.text = None
+        self.toast = None
 
     def get_computer_choice(self):
         return random.randint(1, 3)
@@ -87,16 +87,16 @@ class Game:
 
     def set_text(self):
         if self.result == "draw":
-            self.text = font.render('Its a draw!!', True, (149, 150, 72))
-            self.text_rect = self.text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
+            self.toast = font.render('Its a draw!!', True, (149, 150, 72))
+            self.toast_rect = self.toast.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
 
         elif self.result == "player":
-            self.text = font.render('YOU WIN!!', True, (11, 158, 18))
-            self.text_rect = self.text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
+            self.toast = font.render('YOU WIN!!', True, (11, 158, 18))
+            self.toast_rect = self.toast.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
 
         elif self.result == "computer":
-            self.text = font.render('YOU LOSE!!', True, (189, 0, 0))
-            self.text_rect = self.text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
+            self.toast = font.render('YOU LOSE!!', True, (189, 0, 0))
+            self.toast_rect = self.toast.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
 
     def run(self):
         self.player_choice = self.get_player_choice()
@@ -124,11 +124,19 @@ class Game:
 
             # Rendering sprites
             SCREEN.blit(bg, bg_rect)
-            SCREEN.blit(self.text, self.text_rect)
+
+            SCREEN.blit(self.toast, self.toast_rect)
             SCREEN.blit(choice_text_player, choice_text_player_rect)
             SCREEN.blit(choice_text_computer, choice_text_computer_rect)
-            SCREEN.blit(font.render("Press 'q' to quit!!", True, (214, 182, 219)), (SCREEN_WIDTH*0.5 , SCREEN_HEIGHT*0.5))
-            SCREEN.blit(font.render("Press SPACE to play again!!", True, (156, 126, 155)), (SCREEN_WIDTH*0.5, SCREEN_HEIGHT*0.5))
+
+            quit_text = font.render("Press 'q' to quit!!", True, (214, 182, 219))
+            quit_text_rect =  quit_text.get_rect(midbottom=(SCREEN_WIDTH/2, SCREEN_HEIGHT - quit_text.get_height()*3.6))
+            SCREEN.blit(quit_text, quit_text_rect)
+
+            play_again_text = font.render("Press SPACE to play again!!", True, (156, 126, 155))
+            play_again_text_rect =  play_again_text.get_rect(midbottom=(SCREEN_WIDTH/2, SCREEN_HEIGHT - play_again_text.get_height()*1.3))
+
+            SCREEN.blit(play_again_text, play_again_text_rect)
 
             pygame.display.update()
 
