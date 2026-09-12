@@ -20,7 +20,7 @@ paper = paper.convert_alpha()
 paper_rect = paper.get_rect(topleft=(550, 500))
 
 scissors = scissors.convert_alpha()
-scissors_rect = rock.get_rect(topleft=(850, 500))
+scissors_rect = scissors.get_rect(topleft=(850, 500))
 
 
 class Game:
@@ -30,27 +30,19 @@ class Game:
             "paper": 2,
             "scissors": 3
         }
-        self.winner = ""
+        self.winner_outcomes = {
+            0: "draw",
+            1: "player",
+            2: "computer"
+        }
+
+        self.result = ""
         self.player_choice = None
-        self.player_choice_str = ""
         self.computer_choice = None
-        self.computer_choice_str = ""
         self.text = None
-        self.text_rect = None
 
     def get_computer_choice(self):
-        computer_choice = random.randint(1, 3)
-        if computer_choice == self.choices['rock']:
-            computer_choice_str = "rock"
-            return computer_choice, computer_choice_str
-
-        elif computer_choice == self.choices['paper']:
-            computer_choice_str = "paper"
-            return computer_choice, computer_choice_str
-
-        elif computer_choice == self.choices['scissors']:
-            computer_choice_str = "scissors"
-            return computer_choice, computer_choice_str
+        return random.randint(1, 3)
 
     def get_player_choice(self):
         while True:
@@ -65,19 +57,13 @@ class Game:
                     if event.button == 1:
                         mouse_pos = pygame.mouse.get_pos()
                         if rock_rect.collidepoint(mouse_pos):
-                            player_choice = self.choices['rock']
-                            player_choice_str = "rock"
-                            return player_choice, player_choice_str
+                            return self.choices['rock']
 
                         elif paper_rect.collidepoint(mouse_pos):
-                            player_choice = self.choices['paper']
-                            player_choice_str = "paper"
-                            return player_choice, player_choice_str
+                            return self.choices['paper']
 
                         elif scissors_rect.collidepoint(mouse_pos):
-                            player_choice = self.choices['scissors']
-                            player_choice_str = "scissors"
-                            return player_choice, player_choice_str
+                            return self.choices['scissors']
 
             # Rendering the sprites to the screen
             SCREEN.blit(bg, bg_rect)
@@ -87,63 +73,42 @@ class Game:
 
             pygame.display.update()
 
-    def check_winner(self):
-        if self.player_choice == self.choices['rock']:
-            if self.computer_choice == self.choices['rock']:
-                return "draw"
+    # This is different from the above function:
+    # converts the numerical choices(used in internal logic) into its corresponding name.
+    def get_name_from_choice(self, num_choice):
+        for name, value in self.choices.items():
+            if value==num_choice:
+                return name
 
-            elif self.computer_choice == self.choices['paper']:
-                return "computer"
-
-            elif self.computer_choice == self.choices['scissors']:
-                return "player"
-
-        elif self.player_choice == self.choices['paper']:
-            if self.computer_choice == self.choices['rock']:
-                return "player"
-
-            elif self.computer_choice == self.choices['paper']:
-                return "draw"
-
-            elif self.computer_choice == self.choices['scissors']:
-                return "computer"
-
-        elif self.player_choice == self.choices['scissors']:
-            if self.computer_choice == self.choices['rock']:
-                return "computer"
-
-            elif self.computer_choice == self.choices['paper']:
-                return "player"
-
-            elif self.computer_choice == self.choices['scissors']:
-                return "draw"
+    def get_result(self):
+        # Read the "result_logic.md" for understanding why we used:
+        # (self.player_choice - self.computer_choice)%3        
+        return self.winner_outcomes[(self.player_choice - self.computer_choice)%3]
 
     def set_text(self):
-        if self.winner == "draw":
+        if self.result == "draw":
             self.text = font.render('Its a draw!!', True, (149, 150, 72))
-            self.text_rect = self.text.get_rect(
-                center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
+            self.text_rect = self.text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
 
-        elif self.winner == "player":
+        elif self.result == "player":
             self.text = font.render('YOU WIN!!', True, (11, 158, 18))
-            self.text_rect = self.text.get_rect(
-                center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
+            self.text_rect = self.text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
 
-        elif self.winner == "computer":
+        elif self.result == "computer":
             self.text = font.render('YOU LOSE!!', True, (189, 0, 0))
-            self.text_rect = self.text.get_rect(
-                center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
+            self.text_rect = self.text.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
 
     def run(self):
-        self.player_choice, self.player_choice_str = self.get_player_choice()
-        self.computer_choice, self.computer_choice_str = self.get_computer_choice()
-        self.winner = self.check_winner()
+        self.player_choice = self.get_player_choice()
+        self.computer_choice = self.get_computer_choice()
+        self.result = self.get_result()
         self.set_text()
+
         # set choices of player and computer in text variables using font
-        choice_text_player = font_for_choice.render(f"Player's choice: {self.player_choice_str.capitalize()}", True, (136, 22, 184))
+        choice_text_player = font_for_choice.render(f"Player's choice: {self.get_name_from_choice(self.player_choice).capitalize()}", True, (136, 22, 184))
         choice_text_player_rect = choice_text_player.get_rect(topleft=(0, 0))
-        choice_text_computer = font_for_choice.render(f"Computer's choice: {self.computer_choice_str.capitalize()}", True, (225, 225, 0))
-        choice_text_computer_rect = choice_text_player.get_rect(topleft=(720, 0))
+        choice_text_computer = font_for_choice.render(f"Computer's choice: {self.get_name_from_choice(self.computer_choice).capitalize()}", True, (225, 225, 0))
+        choice_text_computer_rect = choice_text_computer.get_rect(topright=(SCREEN_WIDTH, 0))
 
         while True:
             for event in pygame.event.get():
@@ -162,8 +127,8 @@ class Game:
             SCREEN.blit(self.text, self.text_rect)
             SCREEN.blit(choice_text_player, choice_text_player_rect)
             SCREEN.blit(choice_text_computer, choice_text_computer_rect)
-            SCREEN.blit(font.render("Press 'q' to quit!!", True, (214, 182, 219)), (SCREEN_HEIGHT//2+75, SCREEN_WIDTH-758))
-            SCREEN.blit(font.render("Press SPACE to play again!!", True, (156, 126, 155)), (SCREEN_HEIGHT//2-50, SCREEN_WIDTH-650))
+            SCREEN.blit(font.render("Press 'q' to quit!!", True, (214, 182, 219)), (SCREEN_WIDTH*0.5 , SCREEN_HEIGHT*0.5))
+            SCREEN.blit(font.render("Press SPACE to play again!!", True, (156, 126, 155)), (SCREEN_WIDTH*0.5, SCREEN_HEIGHT*0.5))
 
             pygame.display.update()
 
