@@ -3,7 +3,7 @@ pygame.init()
 import sys
 import random
 from settings import *
-from sprites import *
+from game_assets import *
 
 # Setting up the screen
 # SCREEN = pygame.display.set_mode((SCREEN_HEIGHT, SCREEN_WIDTH))
@@ -31,9 +31,6 @@ gap_between_sprites = leftover_width / 4 # 4 = no.of sprites + 1 (since 1 more g
 rock_rect.topleft = (gap_between_sprites, y_sprites)
 paper_rect.topleft = (rock_rect.right + gap_between_sprites, y_sprites)
 scissors_rect.topleft = (paper_rect.right + gap_between_sprites, y_sprites)
-
-
-
 
 class Game:
     def __init__(self):
@@ -64,7 +61,7 @@ class Game:
                     pygame.quit()
                     sys.exit()
 
-                # Checking fpr the user's choice
+                # Checking for the user's choice
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         mouse_pos = pygame.mouse.get_pos()
@@ -89,7 +86,7 @@ class Game:
     # converts the numerical choices(used in internal logic) into its corresponding name.
     def get_name_from_choice(self, num_choice):
         for name, value in self.choices.items():
-            if value==num_choice:
+            if value == num_choice:
                 return name
 
     def get_result(self):
@@ -119,8 +116,25 @@ class Game:
         # set choices of player and computer in text variables using font
         choice_text_player = font_for_choice.render(f"Player's choice: {self.get_name_from_choice(self.player_choice).capitalize()}", True, (136, 22, 184))
         choice_text_player_rect = choice_text_player.get_rect(topleft=(0, 0))
+
         choice_text_computer = font_for_choice.render(f"Computer's choice: {self.get_name_from_choice(self.computer_choice).capitalize()}", True, (225, 225, 0))
         choice_text_computer_rect = choice_text_computer.get_rect(topright=(SCREEN_WIDTH, 0))
+
+        # (1) Making the text, text_rect
+        quit_text = font.render("Press 'q' to quit!!", True, (214, 182, 219))
+        quit_text_rect =  quit_text.get_rect()
+        
+        play_again_text = font.render("Press SPACE to play again!!", True, (156, 126, 155))
+        play_again_text_rect =  play_again_text.get_rect()
+        
+        # (2) Calculating the dynamic coordinates
+        x_text = SCREEN_WIDTH/2
+        leftover_height = SCREEN_HEIGHT - (self.toast_rect.bottom + quit_text_rect.height + play_again_text_rect.height)
+        gap_between_text = leftover_height/3
+
+        # (3) Applying calculated coordinates
+        quit_text_rect.midtop = (x_text, self.toast_rect.bottom + gap_between_text)
+        play_again_text_rect.midtop = (x_text, quit_text_rect.bottom + gap_between_text)
 
         while True:
             for event in pygame.event.get():
@@ -142,25 +156,10 @@ class Game:
             SCREEN.blit(choice_text_computer, choice_text_computer_rect)
 
             # Rendering quit text, play again text:
-            # (1) Making the text, text_rect
-            quit_text = font.render("Press 'q' to quit!!", True, (214, 182, 219))
-            quit_text_rect =  quit_text.get_rect()
-
-            play_again_text = font.render("Press SPACE to play again!!", True, (156, 126, 155))
-            play_again_text_rect =  play_again_text.get_rect()
-
-            # (2) Calculating the dynamic coordinates
-            x_text = SCREEN_WIDTH/2
-            leftover_height = SCREEN_HEIGHT - (self.toast_rect.bottom + quit_text_rect.height + play_again_text_rect.height)
-            gap_between_text = leftover_height/3
-
-            quit_text_rect.midtop = (x_text, self.toast_rect.bottom + gap_between_text)
-            play_again_text_rect.midtop = (x_text, quit_text_rect.bottom + gap_between_text)
-
             SCREEN.blit(quit_text, quit_text_rect)
             SCREEN.blit(play_again_text, play_again_text_rect)
-            pygame.display.update()
 
+            pygame.display.update()
 
 if __name__ == "__main__":
     game = Game()
