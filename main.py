@@ -1,10 +1,9 @@
 import pygame
+pygame.init()
 import sys
 import random
 from settings import *
 from sprites import *
-pygame.init()
-
 
 # Setting up the screen
 # SCREEN = pygame.display.set_mode((SCREEN_HEIGHT, SCREEN_WIDTH))
@@ -14,13 +13,26 @@ pygame.display.set_icon(icon.convert_alpha())
 
 # Converting all the sprites
 rock = rock.convert_alpha()
-rock_rect = rock.get_rect(topleft=(SCREEN_WIDTH*(1/5), SCREEN_HEIGHT*0.7))
+rock_rect = rock.get_rect()
 
 paper = paper.convert_alpha()
-paper_rect = paper.get_rect(topleft=(SCREEN_WIDTH*(1/2.3), SCREEN_HEIGHT*0.7))
+paper_rect = paper.get_rect()
 
 scissors = scissors.convert_alpha()
-scissors_rect = scissors.get_rect(topleft=(SCREEN_WIDTH*(1/1.5), SCREEN_HEIGHT*0.7))
+scissors_rect = scissors.get_rect()
+
+# Setting the coordinates of the rps sprites using dynamic coordinates:
+# Calculating the dynamic positions
+y_sprites = SCREEN_HEIGHT*0.7
+leftover_width = SCREEN_WIDTH - (rock_rect.width+paper_rect.width+scissors_rect.width)
+gap_between_sprites = leftover_width / 4 # 4 = no.of sprites + 1 (since 1 more gap remains)
+
+# Applying the calculated postions
+rock_rect.topleft = (gap_between_sprites, y_sprites)
+paper_rect.topleft = (rock_rect.right + gap_between_sprites, y_sprites)
+scissors_rect.topleft = (paper_rect.right + gap_between_sprites, y_sprites)
+
+
 
 
 class Game:
@@ -122,22 +134,31 @@ class Game:
                     elif event.key == pygame.K_q:
                         return True
 
-            # Rendering sprites
+            # Rendering bg, toast, player's choice, computer's choice
             SCREEN.blit(bg, bg_rect)
 
             SCREEN.blit(self.toast, self.toast_rect)
             SCREEN.blit(choice_text_player, choice_text_player_rect)
             SCREEN.blit(choice_text_computer, choice_text_computer_rect)
 
+            # Rendering quit text, play again text:
+            # (1) Making the text, text_rect
             quit_text = font.render("Press 'q' to quit!!", True, (214, 182, 219))
-            quit_text_rect =  quit_text.get_rect(midbottom=(SCREEN_WIDTH/2, SCREEN_HEIGHT - quit_text.get_height()*3.6))
-            SCREEN.blit(quit_text, quit_text_rect)
+            quit_text_rect =  quit_text.get_rect()
 
             play_again_text = font.render("Press SPACE to play again!!", True, (156, 126, 155))
-            play_again_text_rect =  play_again_text.get_rect(midbottom=(SCREEN_WIDTH/2, SCREEN_HEIGHT - play_again_text.get_height()*1.3))
+            play_again_text_rect =  play_again_text.get_rect()
 
+            # (2) Calculating the dynamic coordinates
+            x_text = SCREEN_WIDTH/2
+            leftover_height = SCREEN_HEIGHT - (self.toast_rect.bottom + quit_text_rect.height + play_again_text_rect.height)
+            gap_between_text = leftover_height/3
+
+            quit_text_rect.midtop = (x_text, self.toast_rect.bottom + gap_between_text)
+            play_again_text_rect.midtop = (x_text, quit_text_rect.bottom + gap_between_text)
+
+            SCREEN.blit(quit_text, quit_text_rect)
             SCREEN.blit(play_again_text, play_again_text_rect)
-
             pygame.display.update()
 
 
